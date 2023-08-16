@@ -3,6 +3,8 @@ package com.richardchan;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -11,6 +13,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+
+import org.apache.commons.io.FileUtils;
 
 import com.richardchan.csv.CSVReader;
 import com.richardchan.model.InstrumentTradeQuoteData;
@@ -24,16 +28,16 @@ public class App
     public static void main( String[] args ) throws Exception
     {
     	
-    	//String zipPath = "src/main/resources/scandi.csv.zip";
-    	String zipPath = args[0];
     	String targetPath = "target/";
+    	String zipPath = targetPath + "scandi.csv.zip";
+    	downloadFile("https://s3.eu-west-2.amazonaws.com/itarlepublic/scanditicks/scandi.csv.zip", zipPath);
     	unzipFolder(Paths.get(zipPath),Paths.get(targetPath));
+    	
     	Map<String, InstrumentTradeQuoteData> analysis = new HashMap<>(100);
     	
     	CSVReader reader = new CSVReader(new File("target/scandi.csv"));
         while (reader.isIterable()) {
         	String[] columns = reader.next();
-        	//printStringArray(columns);
         	String id = columns[0];
         	InstrumentTradeQuoteData d = analysis.get(id);
         	if (d == null) {
@@ -49,6 +53,12 @@ public class App
         	System.out.println(entry.getValue().summarize());
         }
         
+    }
+    
+    private static void downloadFile(String url, String targetPath) throws MalformedURLException, IOException {
+    	System.out.println("downloading file from: " + url + " ... ");
+    	FileUtils.copyURLToFile(new URL(url), new File(targetPath));
+    	System.out.println("download complete");
     }
     
     // protect zip slip attack
@@ -125,12 +135,5 @@ public class App
         }
 
     }
-    
-    
-    private static void printStringArray(String[] items) {
-    	for (int i = 0; i < items.length; i++) {
-    		System.out.print(items[i] + "|");
-    	}
-    	System.out.println("");
-    }
+
 }

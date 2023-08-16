@@ -24,6 +24,8 @@ public class InstrumentTradeQuoteData {
 	private long totalTimeBtwQuotes;
 	private long maxTimeBtwTrades;
 	private long maxTimeBtwQuotes;
+	private List<Double> bidAskSpreads;
+	private double totalBidAskSpread;
 
 	public InstrumentTradeQuoteData(String id) {
 		this.id = id;
@@ -37,6 +39,8 @@ public class InstrumentTradeQuoteData {
 		this.totalTimeBtwQuotes = 0l;
 		this.maxTimeBtwTrades = -1l;
 		this.maxTimeBtwQuotes = -1l;
+		this.bidAskSpreads = new ArrayList<>(1000);
+		this.totalBidAskSpread = 0d;
 	}
 
 	private static Map<Character, Long> initLastDigitOcurranceMap() {
@@ -71,6 +75,7 @@ public class InstrumentTradeQuoteData {
 				Data d = new Data();
 				Integer updateType = Integer.valueOf(items[8]);
 				int updateTypeInt = updateType.intValue();
+				String conditionCode = items[14];
 				d.setId(this.id);
 				d.setSequence(Integer.valueOf(items[1]));
 				d.setBidPrice(Double.valueOf(items[2]));
@@ -84,12 +89,16 @@ public class InstrumentTradeQuoteData {
 				d.setUpdateType(updateType);
 				d.setDate(DATEFMT.parse(items[10]));
 				d.setSeconds(Math.round(Double.valueOf(items[11])));
-				d.setConditionCodes(items[14]);
+				d.setConditionCodes(conditionCode);
 
 				if (1 == updateTypeInt) {
-					processTradeData(d);
+					if ("".equals(conditionCode) || "XT".equals(conditionCode)) {
+						processTradeData(d);	
+					}
 				} else if (2 == updateTypeInt || 3 == updateTypeInt) {
-					processQuoteData(d);
+					if ("".equals(conditionCode) || "XT".equals(conditionCode)) {
+						processQuoteData(d);
+					}
 				} else {
 					// ignore
 				}
@@ -124,7 +133,6 @@ public class InstrumentTradeQuoteData {
 		this.tradeData.add(trade);
 	}
 
-	// TODO to be implemented
 	private void processQuoteData(Data quote) {
 		if (!quoteData.isEmpty()) {
 			Data lastQuoteData = quoteData.get(quoteData.size() - 1);
@@ -136,6 +144,13 @@ public class InstrumentTradeQuoteData {
 			if (diff > maxTimeBtwQuotes) {
 				maxTimeBtwQuotes = diff;
 			}
+			
+			double spread = quote.getAskPrice() - quote.getBidPrice();
+			if (spread > 0) {
+				totalBidAskSpread += spread;
+				bidAskSpreads.add(spread);
+			}
+			
 		}
 
 		// finally include this quote data in the list
@@ -169,12 +184,21 @@ public class InstrumentTradeQuoteData {
 	public double getPercentageOfOccuranceAsZeroAtTradePrice() {
 		return tradeData.isEmpty() ? Double.NaN : tradePriceLastDigitOccurance.get('0') / (double) tradeData.size();
 	}
+	
+	public double getMeanBidAskSpread() {
+		return bidAskSpreads.isEmpty() ? Double.NaN : totalBidAskSpread / bidAskSpreads.size();
+	}
+	
+	public double getMedianBidAskSpread() {
+		return NumericUtil.calculateMedianDouble(bidAskSpreads);
+	}
 
 	public String summarize() {
 		return "id:" + id + "|meantimebtwtrade:" + this.getMeanTimeBtwTrade() + "|medianbtwtrade:"
 				+ this.getMedianTimeBtwTrade() + "|longesttimebtwtrade:" + this.getMaxTimeBtwTrade()
 				+ "|percentzeroaslastdigitattradeprice:" + this.getPercentageOfOccuranceAsZeroAtTradePrice()
 				+ "|meantimebtwquote:" + this.getMeanTimeBtwQuote() + "|medianbtwquote:" + this.getMedianTimeBtwQuote()
-				+ "|longesttimebtwquote:" + this.getMaxTimeBtwQuote();
+				+ "|longesttimebtwquote:" + this.getMaxTimeBtwQuote() + "|meanbidaskspread:" + this.getMeanBidAskSpread()
+				+ "|medianbidaskspread:" + this.getMedianBidAskSpread();
 	}
 }
