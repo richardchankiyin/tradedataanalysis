@@ -6,7 +6,9 @@ import com.richardchan.NumericUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class InstrumentTradeQuoteData {
 	private static final Logger LOGGER = Logger.getLogger(InstrumentTradeQuoteData.class.getName());
@@ -16,6 +18,8 @@ public class InstrumentTradeQuoteData {
 	private List<Data> quoteData;
 	private List<Long> timeBtwTrades;
 	private List<Long> timeBtwQuotes;
+	private Map<Character,Long> tradePriceLastDigitOccurance;
+	private Map<Character,Long> tradeVolumeLastDigitOccurance;
 	private long totalTimeBtwTrades;
 	private long totalTimeBtwQuotes;
 	private long maxTimeBtwTrades;
@@ -27,10 +31,27 @@ public class InstrumentTradeQuoteData {
 		this.quoteData = new ArrayList<>(1000);
 		this.timeBtwTrades = new ArrayList<>(999);
 		this.timeBtwQuotes = new ArrayList<>(999);
+		this.tradePriceLastDigitOccurance = initLastDigitOcurranceMap();
+		this.tradeVolumeLastDigitOccurance = initLastDigitOcurranceMap();
 		this.totalTimeBtwTrades = 0l;
 		this.totalTimeBtwQuotes = 0l;
 		this.maxTimeBtwTrades = -1l;
 		this.maxTimeBtwQuotes = -1l;
+	}
+	
+	private static Map<Character,Long> initLastDigitOcurranceMap() {
+		HashMap<Character,Long> m = new HashMap<>(10);
+		m.put('0', Long.valueOf(0l));
+		m.put('1', Long.valueOf(0l));
+		m.put('2', Long.valueOf(0l));
+		m.put('3', Long.valueOf(0l));
+		m.put('4', Long.valueOf(0l));
+		m.put('5', Long.valueOf(0l));
+		m.put('6', Long.valueOf(0l));
+		m.put('7', Long.valueOf(0l));
+		m.put('8', Long.valueOf(0l));
+		m.put('9', Long.valueOf(0l));
+		return m;
 	}
 	
 	/**
@@ -62,9 +83,11 @@ public class InstrumentTradeQuoteData {
 					d.setBidPrice(Double.valueOf(items[2]));
 					d.setAskPrice(Double.valueOf(items[3]));
 					d.setTradePrice(Double.valueOf(items[4]));
+					d.setTradePriceLastDigit(Character.valueOf(items[4].charAt(items[4].length() - 1)));
 					d.setBidVolume(Integer.valueOf(items[5]));
 					d.setAskVolume(Integer.valueOf(items[6]));
 					d.setTradeVolume(Integer.valueOf(items[7]));
+					d.setTradeVolumeLastDigit(Character.valueOf(items[7].charAt(items[7].length() - 1)));
 					d.setUpdateType(updateType);
 					d.setDate(DATEFMT.parse(items[10]));
 					d.setSeconds(Math.round(Double.valueOf(items[11])));
@@ -103,6 +126,9 @@ public class InstrumentTradeQuoteData {
 				maxTimeBtwTrades = diff;
 			}
 		}
+		tradePriceLastDigitOccurance.compute(trade.getTradePriceLastDigit(), (k,v)->v+1l);
+		tradeVolumeLastDigitOccurance.compute(trade.getTradeVolumeLastDigit(),(k,v)->v+1l);
+		
 		// finally include this trade data in the list
 		this.tradeData.add(trade);
 	}
@@ -124,7 +150,11 @@ public class InstrumentTradeQuoteData {
 		return NumericUtil.calculateMedian(timeBtwTrades);
 	}
 	
+	public double getPercentageOfOccuranceAsZeroAtTradePrice() {
+		return tradeData.isEmpty() ? Double.NaN : tradePriceLastDigitOccurance.get('0') / (double)tradeData.size();
+	}
+	
 	public String summarize() {
-		return "id:" + id + "|meantimebtwtrade:" + this.getMeanTimeBtwTrade() + "|medianbtwtrade:" + this.getMedianTimeBtwTrade() + "|longesttimebtwtrade:" + this.getMaxTimeBtwTrade();
+		return "id:" + id + "|meantimebtwtrade:" + this.getMeanTimeBtwTrade() + "|medianbtwtrade:" + this.getMedianTimeBtwTrade() + "|longesttimebtwtrade:" + this.getMaxTimeBtwTrade() + "|percentzeroaslastdigitattradeprice:" + this.getPercentageOfOccuranceAsZeroAtTradePrice();
 	}
 }

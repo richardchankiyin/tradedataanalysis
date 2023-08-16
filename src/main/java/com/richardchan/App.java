@@ -24,7 +24,8 @@ public class App
     public static void main( String[] args ) throws Exception
     {
     	
-    	String zipPath = "src/main/resources/scandi.csv.zip";
+    	//String zipPath = "src/main/resources/scandi.csv.zip";
+    	String zipPath = args[0];
     	String targetPath = "target/";
     	unzipFolder(Paths.get(zipPath),Paths.get(targetPath));
     	Map<String, InstrumentTradeQuoteData> analysis = new HashMap<>(100);

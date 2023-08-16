@@ -6,17 +6,59 @@ public class Data {
 	private String id;
 	private Integer sequence;
 	private Double bidPrice;
+	private Character bidPriceLastDigit;
 	private Double askPrice;
+	private Character askPriceLastDigit;
 	private Double tradePrice;
+	private Character tradePriceLastDigit;
 	private Integer bidVolume;
+	private Character bidVolumeLastDigit;
 	private Integer askVolume;
+	private Character askVolumeLastDigit;
 	private Integer tradeVolume;
+	private Character tradeVolumeLastDigit;
 	private Integer updateType;
 	private Date date;
 	private Long seconds;
 	private String conditionCodes;
 	public String getId() {
 		return id;
+	}
+	public Character getBidPriceLastDigit() {
+		return bidPriceLastDigit;
+	}
+	public void setBidPriceLastDigit(Character bidPriceLastDigit) {
+		this.bidPriceLastDigit = bidPriceLastDigit;
+	}
+	public Character getAskPriceLastDigit() {
+		return askPriceLastDigit;
+	}
+	public void setAskPriceLastDigit(Character askPriceLastDigit) {
+		this.askPriceLastDigit = askPriceLastDigit;
+	}
+	public Character getTradePriceLastDigit() {
+		return tradePriceLastDigit;
+	}
+	public void setTradePriceLastDigit(Character tradePriceLastDigit) {
+		this.tradePriceLastDigit = tradePriceLastDigit;
+	}
+	public Character getBidVolumeLastDigit() {
+		return bidVolumeLastDigit;
+	}
+	public void setBidVolumeLastDigit(Character bidVolumeLastDigit) {
+		this.bidVolumeLastDigit = bidVolumeLastDigit;
+	}
+	public Character getAskVolumeLastDigit() {
+		return askVolumeLastDigit;
+	}
+	public void setAskVolumeLastDigit(Character askVolumeLastDigit) {
+		this.askVolumeLastDigit = askVolumeLastDigit;
+	}
+	public Character getTradeVolumeLastDigit() {
+		return tradeVolumeLastDigit;
+	}
+	public void setTradeVolumeLastDigit(Character tradeVolumeLastDigit) {
+		this.tradeVolumeLastDigit = tradeVolumeLastDigit;
 	}
 	public void setId(String id) {
 		this.id = id;
