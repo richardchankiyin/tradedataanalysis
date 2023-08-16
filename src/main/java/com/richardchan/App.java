@@ -7,10 +7,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import com.richardchan.csv.CSVReader;
+import com.richardchan.model.InstrumentTradeQuoteData;
 
 /**
  * Hello world!
@@ -24,11 +27,25 @@ public class App
     	String zipPath = "src/main/resources/scandi.csv.zip";
     	String targetPath = "target/";
     	unzipFolder(Paths.get(zipPath),Paths.get(targetPath));
+    	Map<String, InstrumentTradeQuoteData> analysis = new HashMap<>(100);
+    	
     	CSVReader reader = new CSVReader(new File("target/scandi.csv"));
-        
         while (reader.isIterable()) {
         	String[] columns = reader.next();
-        	printStringArray(columns);
+        	//printStringArray(columns);
+        	String id = columns[0];
+        	InstrumentTradeQuoteData d = analysis.get(id);
+        	if (d == null) {
+        		d = new InstrumentTradeQuoteData(id);
+        		d.processValues(columns);
+        		analysis.put(id, d);
+        	} else {
+        		d.processValues(columns);
+        	}
+        }
+
+        for (Map.Entry<String, InstrumentTradeQuoteData> entry: analysis.entrySet()) {
+        	System.out.println(entry.getValue().summarize());
         }
         
     }
