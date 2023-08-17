@@ -182,11 +182,11 @@ public class InstrumentTradeQuoteData {
 	}
 
 	public double getPercentageOfOccuranceAsZeroAtTradePrice() {
-		return tradeData.isEmpty() ? Double.NaN : tradePriceLastDigitOccurance.get('0') / (double) tradeData.size();
+		return tradeData.isEmpty() ? Double.NaN : 100 * tradePriceLastDigitOccurance.get('0') / (double) tradeData.size();
 	}
 	
 	public double getPercentageOfOccuranceAsZeroAtTradeVolume() {
-		return tradeData.isEmpty() ? Double.NaN : tradeVolumeLastDigitOccurance.get('0') / (double) tradeData.size();
+		return tradeData.isEmpty() ? Double.NaN : 100 * tradeVolumeLastDigitOccurance.get('0') / (double) tradeData.size();
 	}
 	
 	public double getMeanBidAskSpread() {
