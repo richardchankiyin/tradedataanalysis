@@ -185,6 +185,10 @@ public class InstrumentTradeQuoteData {
 		return tradeData.isEmpty() ? Double.NaN : tradePriceLastDigitOccurance.get('0') / (double) tradeData.size();
 	}
 	
+	public double getPercentageOfOccuranceAsZeroAtTradeVolume() {
+		return tradeData.isEmpty() ? Double.NaN : tradeVolumeLastDigitOccurance.get('0') / (double) tradeData.size();
+	}
+	
 	public double getMeanBidAskSpread() {
 		return bidAskSpreads.isEmpty() ? Double.NaN : totalBidAskSpread / bidAskSpreads.size();
 	}
@@ -194,11 +198,13 @@ public class InstrumentTradeQuoteData {
 	}
 
 	public String summarize() {
-		return "id:" + id + "|meantimebtwtrade:" + this.getMeanTimeBtwTrade() + "|medianbtwtrade:"
-				+ this.getMedianTimeBtwTrade() + "|longesttimebtwtrade:" + this.getMaxTimeBtwTrade()
+		return "id:" + id + "|meantimebtwtrades:" + this.getMeanTimeBtwTrade() + "|medianbtwtrades:"
+				+ this.getMedianTimeBtwTrade() + "|longesttimebtwtrades:" + this.getMaxTimeBtwTrade()
+				+ "|meantimebtwtickchanges:" + this.getMeanTimeBtwQuote() + "|medianbtwtickchanges:" + this.getMedianTimeBtwQuote()
+				+ "|longesttimebtwtickchanges:" + this.getMaxTimeBtwQuote() + "|meanbidaskspread:" + this.getMeanBidAskSpread()
+				+ "|medianbidaskspread:" + this.getMedianBidAskSpread()
 				+ "|percentzeroaslastdigitattradeprice:" + this.getPercentageOfOccuranceAsZeroAtTradePrice()
-				+ "|meantimebtwquote:" + this.getMeanTimeBtwQuote() + "|medianbtwquote:" + this.getMedianTimeBtwQuote()
-				+ "|longesttimebtwquote:" + this.getMaxTimeBtwQuote() + "|meanbidaskspread:" + this.getMeanBidAskSpread()
-				+ "|medianbidaskspread:" + this.getMedianBidAskSpread();
+				+ "|percentzeroaslastdigitattradevol:" + this.getPercentageOfOccuranceAsZeroAtTradeVolume()
+				;
 	}
 }
