@@ -8,7 +8,11 @@ maven 3
 build command:
 mvn clean compile install assembly:single
 run command:
-java -jar target/tradedataanalysis-1.0-SNAPSHOT-jar-with-dependencies.jar
+java -jar target/tradedataanalysis-1.1-SNAPSHOT-jar-with-dependencies.jar
+build docker image:
+./builddockerimage.sh
+run from docker:
+./run_from_docker.sh
 
 Sample output:
 richard@xxxxx:~/tradedataanalysis$ java -jar target/tradedataanalysis-1.0-SNAPSHOT-jar-with-dependencies.jar 
