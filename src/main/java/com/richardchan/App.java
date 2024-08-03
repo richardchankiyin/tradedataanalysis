@@ -30,7 +30,7 @@ public class App
     	
     	String targetPath = "target/";
     	String zipPath = targetPath + "scandi.csv.zip";
-    	downloadFile("https://s3.eu-west-2.amazonaws.com/itarlepublic/scanditicks/scandi.csv.zip", zipPath);
+    	downloadFile("file:src/main/resources/scandi.csv.zip", zipPath);
     	unzipFolder(Paths.get(zipPath),Paths.get(targetPath));
     	
     	Map<String, InstrumentTradeQuoteData> analysis = new HashMap<>(100);
